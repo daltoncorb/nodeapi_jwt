@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt_BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axios Use</title>
+</head>
+
+<body>
+    <div class="container">
+        <ul id="prod"></ul>
+        <div class="row">
+            <h4>Cadastro de Produtos</h4>
+            <label for="id">Id</label><br>
+            <input type="number" id="id">
+            <br>
+            <label for="title">Título</label><br>
+            <input type="text" id="title">
+            <br>
+            <label for="price">Price</label><br>
+            <input type="number" id="price">
+            <button onclick="CriarProduto()">Salvar</button>
+        </div>
+
+        <div class="row">
+            <h4>Edição de Produtos</h4>
+            <label for="idup">Id</label><br>
+            <input type="number" id="idup">
+            <br>
+            <label for="titleup">Título</label><br>
+            <input type="text" id="titleup">
+            <br>
+            <label for="priceup">Price</label><br>
+            <input type="number" id="priceup">
+            <button onclick="gravarProduto()">Salvar</button>
+        </div>
+
+    </div>
+
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+
+    function Excluir(itemDelete) {
+        if (itemDelete == undefined)
+            alert("Erro grave!")
+
+        var aid = itemDelete.getAttribute("data-id");
+
+        console.log(aid)
+
+        axios.delete("http://localhost:4200/products/" + aid, responde => {
+            if (responde.status == 200){
+                alert("Item " + itemDelete.getAttribute("data-title") + " excluido do sistema !")
+                axios.get("http://localhost:4200/products/")
+            }
+            else
+                alert("Problemas ao excluir o item!");
+        })
+    }
+
+    function EditarProduto(item) {
+        if (item == undefined)
+            alert("Nenhum produto passado para edição!")
+
+        var idE = document.getElementById("idup");
+        var tiE = document.getElementById("titleup");
+        var prE = document.getElementById("priceup");
+
+        idE.value = item.getAttribute("data-id");
+        tiE.value = item.getAttribute("data-title");
+        prE.value = item.getAttribute("data-price");
+    }
+
+    function gravarProduto() {
+        let vid = document.getElementById("idup")
+        let vtitle = document.getElementById("titleup")
+        let vprice = document.getElementById("priceup")
+        let Produto = {
+            id: vid.value,
+            title: vtitle.value,
+            price: vprice.value
+        }
+        //console.log(Produto);
+
+        axios.put("http://localhost:4200/products/" + vid.value, Produto).then(result => {
+            if (result.status == 200) {
+                alert("Produto registrado com sucesso !");
+            }
+        }).catch(error => {
+            alert("Um problema ocorreu ao gravar os dados !")
+        })
+    }   
+
+    function CriarProduto() {
+        let vid = document.getElementById("id")
+        let vtitle = document.getElementById("title")
+        let vprice = document.getElementById("price")
+        let Produto = {
+            id: vid.value,
+            title: vtitle.value,
+            price: vprice.value
+        }
+        console.log(Produto);
+
+        axios.post("http://localhost:4200/products", Produto).then(result => {
+            if (result.status == 200) {
+                alert("Produto registrado com sucesso !");
+            }
+        }).catch(error => {
+            alert("Um problema ocorreu ao gravar os dados !")
+        })
+    }
+
+    axios.get("http://localhost:4200/products").then(response => {
+        var produtos = response.data;
+        var list = document.getElementById("prod");
+
+        var tab = document.createElement("table")
+        var r = tab.insertRow(0);
+        var c = r.insertCell(0);
+        c.innerHTML = "ID";
+        c = r.insertCell(1);
+        c.innerHTML = "Descricao"
+        c = r.insertCell(2);
+        c.innerHTML = "Valor"
+        c = r.insertCell(3);
+        c.innerHTML = "Comandos"
+        produtos.forEach((e, index) => {
+
+            r = tab.insertRow(index + 1)
+            c = r.insertCell(0);
+            c.innerHTML = e.id;
+            c = r.insertCell(1);
+            c.innerHTML = e.title
+            c = r.insertCell(2);
+            c.innerHTML = e.price
+            c = r.insertCell(3);
+            var btEx = document.createElement("button")
+            btEx.innerHTML = "Excluir"
+
+            btEx.setAttribute("data-id", e.id);
+            btEx.setAttribute("data-title", e.title);
+            btEx.setAttribute("data-price", e.price);
+
+            btEx.addEventListener("click", function () { Excluir(btEx) })
+            var btEd = document.createElement("button")
+            btEd.innerHTML = "Editar"
+
+            btEd.setAttribute("data-id", e.id);
+            btEd.setAttribute("data-title", e.title);
+            btEd.setAttribute("data-price", e.price);
+
+            btEd.addEventListener("click", function () { EditarProduto(btEd) })
+            c.appendChild(btEx);            
+            c.appendChild(btEd);
+
+
+        });
+
+        console.log(tab);     
+
+        if (response.status == 200) {
+            list.appendChild(tab);            
+        }
+    }).catch(erro => {
+        console.log(erro)
+    })
+</script>
+
+</html>
