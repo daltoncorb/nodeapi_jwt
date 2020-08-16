@@ -2,8 +2,9 @@ const Exp = require('express');
 const Usr = require('../Models/User');
 const Tkn = require('jsonwebtoken');
 const Middle = require('../Middleware/TheMiddle')
+const Keypass = require('../KeyValueData')
 
-const keyValueEntryPoint = "Dalton06011971Luciane28011969Maggie";
+//const keyValueEntryPoint = "Dalton06011971Luciane28011969Maggie";
 
 const Router = Exp.Router();
 
@@ -28,14 +29,14 @@ Router.get('/login', (r, w) => {
         if (respond == undefined)
             w.status(401).send('Usuário ou senha não registrados no Sistema!')
         else {
-            var n = keyValueEntryPoint;
+            var n = Keypass.keyValueEntryPoint; //keyValueEntryPoint;
 
             var tk = Tkn.sign({
                 username: respond.username,
                 userId: respond.id,
                 role: respond.role,
                 email: respond.email
-            }, keyValueEntryPoint, { expiresIn: "300s" }, (error, jwt) => {
+            }, n, { expiresIn: "300s" }, (error, jwt) => {
                 if (error)
                     return w.status(400).send('Problemas ao gerar o token')
 

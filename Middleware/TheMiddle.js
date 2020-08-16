@@ -1,6 +1,6 @@
 const Jwt = require('jsonwebtoken');
-
-const keyValueEntryPoint = "Dalton06011971Luciane28011969Maggie";
+const Keypass = require('../KeyValueData')
+//const keyValueEntryPoint = "Dalton06011971Luciane28011969Maggie";
 
 function MyMidlle(r, w, next) {
     const getToken = r.headers['authorization'];
@@ -10,7 +10,7 @@ function MyMidlle(r, w, next) {
     else {
         //return w.status(200).send('Usuário autorizado')
         var getParts = getToken.split(' ');
-        Jwt.verify(getParts[1], keyValueEntryPoint, (error, token) => {
+        Jwt.verify(getParts[1], Keypass.keyValueEntryPoint, (error, token) => {
             if (error)
                 return w.status(401).send('Usuário não autorizado, tente reconectar fazendo o login')
             else {
