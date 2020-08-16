@@ -10,6 +10,17 @@
 <body>
     <div class="container">
         <ul id="prod"></ul>
+
+        <div class="row">
+            <h3>Login de Usuário</h3>            
+                <label for="email">Email</label><br>
+                <input type="text" id="email"><br>
+                <label for="password">Password</label><br>
+                <input type="password" id="password"><br>
+                <button onclick="fazerLogin()">Logar</button>
+          
+        </div>
+
         <div class="row">
             <h4>Cadastro de Produtos</h4>
             <label for="id">Id</label><br>
@@ -36,12 +47,48 @@
             <button onclick="gravarProduto()">Salvar</button>
         </div>
 
+
+
     </div>
 
 
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
+
+    var AxiosBearer = {
+        headers:{
+            authorization: "Bearer " + localStorage.getItem("tkw")
+        }
+    }
+
+
+    function fazerLogin(){
+        var email = document.getElementById('email');
+        var passw = document.getElementById('password');
+
+        var emValue = email.value;
+        var psValue = passw.value;
+
+        axios.post('http://localhost:4200/login',{"email": emValue, "password": psValue}).then( respond =>{
+            
+            if (respond.status == 200){
+               var tk = respond.data.jwt;
+               //sessionStorage.setItem('tkw', tk)
+              
+               localStorage.setItem('tkw', tk)
+
+               //isso recarrega o token sempre ao fazer o login
+               AxiosBearer.headers.authorization = 'Bearer ' + localStorage.getItem('tkw') 
+             
+            }
+            if(respond.status == 401){
+                Alert("Usuário ou Senha não está conferindo com o Sistema!")
+            }
+        }).catch(error =>{
+            alert("Problemas ao executar o login!")
+        })
+    }
 
     function Excluir(itemDelete) {
         if (itemDelete == undefined)
@@ -114,7 +161,7 @@
         })
     }
 
-    axios.get("http://localhost:4200/products").then(response => {
+    axios.get("http://localhost:4200/products", AxiosBearer).then(response => {
         var produtos = response.data;
         var list = document.getElementById("prod");
 

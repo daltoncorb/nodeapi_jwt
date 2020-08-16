@@ -8,16 +8,16 @@ const Keypass = require('../KeyValueData')
 
 const Router = Exp.Router();
 
-Router.get('/login', (r, w) => {
+Router.post('/login', (r, w) => {
     var e = r.body.email;
     var p = r.body.password;
 
     if (e == undefined || p == undefined) {
-        return w.status(400).send("Uops! Usuários ou senha inválidos !");
+        w.status(400).send("Uops! Usuários ou senha inválidos !");
     }
 
     if (e.trim() == '' || p.trim() == '') {
-        return w.status(400).send("Usuário ou senha foram enviandos sem informações!")
+        w.status(400).send("Usuário ou senha foram enviandos sem informações!")
     }
 
     Usr.findOne({

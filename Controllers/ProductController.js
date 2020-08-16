@@ -1,9 +1,10 @@
 const Exp = require('express');
 const Prd = require('../Models/Produtos');
+const Middle = require('../Middleware/TheMiddle')
 
 const Router = Exp.Router();
 
-Router.get('/products',(r, w) =>{
+Router.get('/products', Middle, (r, w) =>{
     Prd.findAll().then(result =>{
         if (result != undefined)
         w.json(result);
